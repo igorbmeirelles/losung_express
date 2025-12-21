@@ -5,6 +5,7 @@
 
 /** @type {import('jest').Config} */
 const config = {
+  preset: "ts-jest/presets/default-esm",
   // All imported modules in your tests should be mocked automatically
   // automock: false,
 
@@ -147,7 +148,7 @@ const config = {
   // snapshotSerializers: [],
 
   // The test environment that will be used for testing
-  // testEnvironment: "jest-environment-node",
+  testEnvironment: "node",
 
   // Options that will be passed to the testEnvironment
   // testEnvironmentOptions: {},
@@ -156,10 +157,7 @@ const config = {
   // testLocationInResults: false,
 
   // The glob patterns Jest uses to detect test files
-  // testMatch: [
-  //   "**/__tests__/**/*.?([mc])[jt]s?(x)",
-  //   "**/?(*.)+(spec|test).?([mc])[jt]s?(x)"
-  // ],
+  testMatch: ["**/*.test.[tj]s?(x)"],
 
   // An array of regexp pattern strings that are matched against all test paths, matched tests are skipped
   // testPathIgnorePatterns: [
@@ -175,8 +173,17 @@ const config = {
   // This option allows use of a custom test runner
   // testRunner: "jest-circus/runner",
 
+  extensionsToTreatAsEsm: [".ts", ".tsx"],
   // A map from regular expressions to paths to transformers
-  // transform: undefined,
+  transform: {
+    "^.+\\.[tj]sx?$": [
+      "ts-jest",
+      {
+        useESM: true,
+        tsconfig: "tsconfig.json",
+      },
+    ],
+  },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
   // transformIgnorePatterns: [
@@ -195,6 +202,17 @@ const config = {
 
   // Whether to use watchman for file crawling
   // watchman: true,
+
+  moduleNameMapper: {
+    "^(\\.{1,2}/.*)\\.js$": "$1",
+  },
+  setupFiles: ["<rootDir>/node_modules/reflect-metadata"],
+  globals: {
+    "ts-jest": {
+      useESM: true,
+      tsconfig: "tsconfig.json",
+    },
+  },
 };
 
 export default config;

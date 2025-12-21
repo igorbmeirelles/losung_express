@@ -158,13 +158,13 @@ Plain-text passwords **must never reach the database layer**.
 
 #### Subtasks
 
-* [ ] Create SignupController
+* [x] Create SignupController
 
   * Validate input using Zod
   * Enforce password length (max 20 characters)
   * Translate `Result` to HTTP responses
 
-* [ ] Create SignupUseCase
+* [x] Create SignupUseCase
 
   * Create user as active
   * Do **not** assign company roles
@@ -172,12 +172,12 @@ Plain-text passwords **must never reach the database layer**.
   * Do **not** generate authentication tokens
   * Return `Result.Success` or `Result.Failure`
 
-* [ ] Implement PasswordHashService
+* [x] Implement PasswordHashService
 
   * Use **argon2** for hashing
   * Expose `hash(password)` and `verify(password, hash)` methods
 
-* [ ] Implement UserRepository (Prisma adapter)
+* [x] Implement UserRepository (Prisma adapter)
 
   * Persist only **hashed passwords**
   * Reject persistence of plain-text passwords
@@ -279,19 +279,19 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 
 #### Unit Tests — SignupUseCase
 
-* [ ] Should create a user as active
-* [ ] Should hash password using Argon2
-* [ ] Should reject passwords longer than 20 characters
-* [ ] Should never persist plain-text passwords
-* [ ] Should return `Result.Success` on valid input
-* [ ] Should return `Result.Failure` on invalid input
+* [x] Should create a user as active
+* [x] Should hash password using Argon2
+* [x] Should reject passwords longer than 20 characters
+* [x] Should never persist plain-text passwords
+* [x] Should return `Result.Success` on valid input
+* [x] Should return `Result.Failure` on invalid input
 
 #### Integration Tests — `/signup`
 
-* [ ] Should return HTTP 201 on successful signup
-* [ ] Should persist user with hashed password
-* [ ] Should not return JWT token in response
-* [ ] Should validate request payload with Zod
+* [x] Should return HTTP 201 on successful signup
+* [x] Should persist user with hashed password
+* [x] Should not return JWT token in response
+* [x] Should validate request payload with Zod
 
 ---
 

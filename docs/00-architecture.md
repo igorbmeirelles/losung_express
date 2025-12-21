@@ -258,6 +258,8 @@ The application must be **testable at all layers**.
 * Use cases must be testable without a database
 * Domain tests must avoid heavy mocking
 * Infrastructure may use a real database in test environments
+* Integrações HTTP devem usar a factory/app oficial da aplicação (ex.: `createApp`) — não monte instâncias Express paralelas nos testes
+* Toda injeção de dependência deve ser centralizada via `tsyringe` e o container único da aplicação (registrar adapters, serviços e use cases no composition root)
 
 ---
 
