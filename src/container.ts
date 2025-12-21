@@ -15,6 +15,12 @@ import { HasCompanyUseCase } from "./users/application/use-cases/has-company.use
 import { HasCompanyController } from "./users/infrastructure/http/has-company.controller.js";
 import { RefreshLoginUseCase } from "./users/application/use-cases/refresh-login.use-case.js";
 import { RefreshLoginController } from "./users/infrastructure/http/refresh-login.controller.js";
+import { PrismaCompanyRepository } from "./companies/infrastructure/repositories/prisma-company.repository.js";
+import { PrismaBranchRepository } from "./companies/infrastructure/repositories/prisma-branch.repository.js";
+import { PrismaBoardMembersRepository } from "./companies/infrastructure/repositories/prisma-board-members.repository.js";
+import { CreateCompanyUseCase } from "./companies/application/use-cases/create-company.use-case.js";
+import { CompanyController } from "./companies/infrastructure/http/company.controller.js";
+import { COMPANY_DEPENDENCY_TOKENS } from "./companies/tokens.js";
 import { DEPENDENCY_TOKENS } from "./users/tokens.js";
 
 container.registerSingleton(DEPENDENCY_TOKENS.userRepository, PrismaUserRepository);
@@ -37,5 +43,22 @@ container.registerSingleton(
   RefreshLoginUseCase
 );
 container.registerSingleton(RefreshLoginController, RefreshLoginController);
+container.registerSingleton(
+  COMPANY_DEPENDENCY_TOKENS.companyRepository,
+  PrismaCompanyRepository
+);
+container.registerSingleton(
+  COMPANY_DEPENDENCY_TOKENS.branchRepository,
+  PrismaBranchRepository
+);
+container.registerSingleton(
+  COMPANY_DEPENDENCY_TOKENS.boardMembersRepository,
+  PrismaBoardMembersRepository
+);
+container.registerSingleton(
+  COMPANY_DEPENDENCY_TOKENS.createCompanyUseCase,
+  CreateCompanyUseCase
+);
+container.registerSingleton(CompanyController, CompanyController);
 
 export { container };

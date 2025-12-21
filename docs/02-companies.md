@@ -147,7 +147,7 @@ Create a company and its initial branch.
   * Extract authenticated user from request
   * Validate input using Zod
 
-* [ ] Create CreateCompanyUseCase
+* [x] Create CreateCompanyUseCase
 
   * Validate user eligibility
   * Create company entity
@@ -156,17 +156,12 @@ Create a company and its initial branch.
   * Assign COMPANY_OWNER role
   * Return updated identity context
 
-* [ ] Implement CompanyRepository (Prisma)
+* [x] Implement CompanyRepository (Prisma)
 
-* [ ] Implement BranchRepository (Prisma)
+* [x] Implement BranchRepository (Prisma)
 
-* [ ] Implement BoardMembersRepository (Prisma)
+* [x] Implement BoardMembersRepository (Prisma)
 
-* [ ] Regenerate JWT
-
-  * Include companyId
-  * Include roles
-  * Include branchIds
 
 ---
 
@@ -215,17 +210,16 @@ Add employees to a company with role-based access control.
 
 #### Unit Tests — CreateCompanyUseCase
 
-* [ ] Should create a company for an authenticated user
-* [ ] Should create a default branch
-* [ ] Should assign COMPANY_OWNER role
-* [ ] Should add user to BoardMembers
-* [ ] Should regenerate JWT with companyId and branchIds
+* [x] Should create a company for an authenticated user
+* [x] Should create a default branch
+* [x] Should assign COMPANY_OWNER role
+* [x] Should add user to BoardMembers
 
 #### Integration Tests
 
-* [ ] Should return HTTP 201 on success
-* [ ] Should return updated JWT
-* [ ] Should persist company, branch, and board members
+* [x] Should return HTTP 201 on success
+* [x] Should return updated JWT
+* [x] Should persist company, branch, and board members
 
 ---
 
