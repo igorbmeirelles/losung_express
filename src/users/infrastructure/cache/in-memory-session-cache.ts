@@ -28,8 +28,15 @@ export class InMemorySessionCache implements SessionCache {
     this.sessions.delete(sessionId);
   }
 
-  get(sessionId: string): StoredSession | undefined {
-    return this.sessions.get(sessionId);
+  async getSession(sessionId: string): Promise<SessionCacheEntry | null> {
+    const entry = this.sessions.get(sessionId);
+    if (!entry) return null;
+    return {
+      sessionId: entry.sessionId,
+      userId: entry.userId,
+      accessToken: entry.accessToken,
+      refreshToken: entry.refreshToken,
+    };
   }
 
   clear(): void {

@@ -82,8 +82,11 @@ describe("/login (integration)", () => {
       DEPENDENCY_TOKENS.sessionCache
     );
     if (sessionCache instanceof InMemorySessionCache) {
-      const { sid } = jwt.verify(response.body.refreshToken, authEnvs.jwtSecret) as any;
-      const cached = sessionCache.get(sid);
+      const { sid } = jwt.verify(
+        response.body.refreshToken,
+        authEnvs.jwtSecret
+      ) as any;
+      const cached = await sessionCache.getSession(sid);
       expect(cached?.userId).toBe(baseUser.id);
       expect(cached?.refreshToken).toBe(response.body.refreshToken);
       expect(cached?.accessToken).toBe(response.body.accessToken);

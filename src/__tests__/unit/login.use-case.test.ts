@@ -58,6 +58,9 @@ class StubSessionCache implements SessionCache {
   saveSession(entry: SessionCacheEntry): Promise<void> {
     return this.saveSessionMock(entry);
   }
+  getSession(): Promise<SessionCacheEntry | null> {
+    throw new Error("not implemented");
+  }
 }
 
 const baseUser: AuthUser = {

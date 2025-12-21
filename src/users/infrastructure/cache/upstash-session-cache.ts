@@ -25,4 +25,14 @@ export class UpstashSessionCache implements SessionCache {
   async deleteSession(sessionId: string): Promise<void> {
     await this.redis.del(sessionId);
   }
+
+  async getSession(sessionId: string): Promise<SessionCacheEntry | null> {
+    const value = await this.redis.get<string>(sessionId);
+    if (!value) return null;
+    try {
+      return JSON.parse(value) as SessionCacheEntry;
+    } catch {
+      return null;
+    }
+  }
 }

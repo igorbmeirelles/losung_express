@@ -8,4 +8,5 @@ export interface SessionCacheEntry {
 export interface SessionCache {
   saveSession(entry: SessionCacheEntry): Promise<void>;
   deleteSession(sessionId: string): Promise<void>;
+  getSession(sessionId: string): Promise<SessionCacheEntry | null>;
 }

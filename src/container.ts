@@ -13,6 +13,8 @@ import { LogoutUseCase } from "./users/application/use-cases/logout.use-case.js"
 import { LogoutController } from "./users/infrastructure/http/logout.controller.js";
 import { HasCompanyUseCase } from "./users/application/use-cases/has-company.use-case.js";
 import { HasCompanyController } from "./users/infrastructure/http/has-company.controller.js";
+import { RefreshLoginUseCase } from "./users/application/use-cases/refresh-login.use-case.js";
+import { RefreshLoginController } from "./users/infrastructure/http/refresh-login.controller.js";
 import { DEPENDENCY_TOKENS } from "./users/tokens.js";
 
 container.registerSingleton(DEPENDENCY_TOKENS.userRepository, PrismaUserRepository);
@@ -30,5 +32,10 @@ container.registerSingleton(DEPENDENCY_TOKENS.logoutUseCase, LogoutUseCase);
 container.registerSingleton(LogoutController, LogoutController);
 container.registerSingleton(DEPENDENCY_TOKENS.hasCompanyUseCase, HasCompanyUseCase);
 container.registerSingleton(HasCompanyController, HasCompanyController);
+container.registerSingleton(
+  DEPENDENCY_TOKENS.refreshLoginUseCase,
+  RefreshLoginUseCase
+);
+container.registerSingleton(RefreshLoginController, RefreshLoginController);
 
 export { container };
