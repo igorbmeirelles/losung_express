@@ -3,13 +3,13 @@ import "dotenv/config";
 import express from "express";
 import { applicationEnvs } from "./globals/envs.js";
 import "./container.js";
-import { buildSignupRouter } from "./users/infrastructure/http/signup.router.js";
+import { buildRoutes } from "./routes/index.js";
 
 export function createApp() {
   const app = express();
   app.use(express.json());
 
-  app.use("/signup", buildSignupRouter());
+  app.use(buildRoutes());
 
   return app;
 }
