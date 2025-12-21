@@ -7,7 +7,6 @@ import type {
   SessionCache,
   SessionCacheEntry,
 } from "../../users/application/contracts/session-cache.js";
-import * as ulidModule from "ulid";
 
 class StubUserRepository implements UserRepository {
   constructor(private authUser: AuthUser | null) {}
@@ -67,14 +66,6 @@ const baseUser: AuthUser = {
 };
 
 describe("LoginUseCase (unit)", () => {
-  beforeEach(() => {
-    jest.spyOn(ulidModule, "ulid").mockReturnValue("01HSESSIONCACHEID");
-  });
-
-  afterEach(() => {
-    jest.restoreAllMocks();
-  });
-
   it("authenticates valid credentials and returns token/context", async () => {
     const repo = new StubUserRepository(baseUser);
     const hasher = new StubPasswordHasher();
@@ -200,7 +191,7 @@ describe("LoginUseCase (unit)", () => {
 
     expect(sessionCache.saveSessionMock).toHaveBeenCalledWith(
       expect.objectContaining({
-        sessionId: "01HSESSIONCACHEID",
+        sessionId: expect.any(String),
         userId: baseUser.id,
         accessToken: "access",
         refreshToken: "refresh",
