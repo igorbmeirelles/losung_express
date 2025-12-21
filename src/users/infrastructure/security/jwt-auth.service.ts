@@ -16,4 +16,8 @@ export class JwtAuthService implements AuthService {
       expiresIn: authEnvs.refreshExpiresIn,
     });
   }
+
+  async verifyRefresh(token: string): Promise<Record<string, unknown>> {
+    return jwt.verify(token, authEnvs.jwtSecret) as Record<string, unknown>;
+  }
 }

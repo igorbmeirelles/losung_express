@@ -39,6 +39,9 @@ class StubAuthService implements AuthService {
   signRefresh(payload: Record<string, unknown>): Promise<string> {
     return this.signRefreshMock(payload);
   }
+  verifyRefresh(): Promise<Record<string, unknown>> {
+    throw new Error("not implemented");
+  }
 }
 
 class StubSessionCache implements SessionCache {
