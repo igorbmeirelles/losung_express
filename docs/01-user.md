@@ -199,12 +199,12 @@ Authenticate users and issue access tokens.
 
 #### Subtasks
 
-* [ ] Create LoginController
+* [x] Create LoginController
 
   * Validate credentials
   * Extract tenant from request
 
-* [ ] Create LoginUseCase
+* [x] Create LoginUseCase
 
   * Validate credentials
   * Verify password using `PasswordHashService`
@@ -212,7 +212,7 @@ Authenticate users and issue access tokens.
   * Load associated company and branch IDs
   * Return authentication data wrapped in `Result`
 
-* [ ] Define JWT payload
+* [x] Define JWT payload
 
   * userId
   * firstName
@@ -222,7 +222,7 @@ Authenticate users and issue access tokens.
   * roles
   * branchIds
 
-* [ ] Implement AuthService
+* [x] Implement AuthService
 
   * Password verification delegation
   * JWT generation
@@ -299,19 +299,19 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 
 #### Unit Tests — LoginUseCase
 
-* [ ] Should authenticate user with valid credentials
-* [ ] Should verify password using Argon2
-* [ ] Should reject invalid credentials
-* [ ] Should load user roles correctly
-* [ ] Should load associated companyId and branchIds
-* [ ] Should return authentication context as `Result.Success`
+* [x] Should authenticate user with valid credentials
+* [x] Should verify password using Argon2
+* [x] Should reject invalid credentials
+* [x] Should load user roles correctly
+* [x] Should load associated companyId and branchIds
+* [x] Should return authentication context as `Result.Success`
 
 #### Integration Tests — `/login`
 
-* [ ] Should return HTTP 200 on valid login
-* [ ] Should return JWT token
-* [ ] JWT should contain userId, name, email, companyId, roles, branchIds
-* [ ] Should reject login with invalid password
+* [x] Should return HTTP 200 on valid login
+* [x] Should return JWT token
+* [x] JWT should contain userId, name, email, companyId, roles, branchIds
+* [x] Should reject login with invalid password
 
 ---
 

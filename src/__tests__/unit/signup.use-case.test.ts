@@ -13,6 +13,9 @@ class InMemoryUserRepository implements UserRepository {
   public createMock: jest.MockedFunction<
     (data: CreateUserData) => Promise<UserRecord>
   > = jest.fn();
+  async findByEmailWithAuth(): Promise<any> {
+    throw new Error("not implemented");
+  }
 
   async create(data: CreateUserData): Promise<UserRecord> {
     this.createMock.mock.calls.length === 0 &&

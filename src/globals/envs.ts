@@ -1,3 +1,4 @@
+import type { SignOptions } from "jsonwebtoken";
 import * as z from "zod";
 
 const ApplicationSchema = z.object({
@@ -16,4 +17,18 @@ const DatabaseSchema = z.object({
 DatabaseSchema.parse({
   databaseUrl: process.env.DATABASE_URL,
   directUrl: process.env.DIRECT_URL,
+});
+
+export const AuthSchema = z.object({
+  jwtSecret: z.string(),
+
+  jwtExpiresIn: z.custom<SignOptions["expiresIn"]>().default("1h"),
+
+  refreshExpiresIn: z.custom<SignOptions["expiresIn"]>().default("7d"),
+});
+
+export const authEnvs = AuthSchema.parse({
+  jwtSecret: process.env.JWT_SECRET,
+  jwtExpiresIn: process.env.JWT_EXPIRES_IN,
+  refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
 });
