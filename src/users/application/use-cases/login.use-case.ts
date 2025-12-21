@@ -1,10 +1,15 @@
 import { inject, injectable } from "tsyringe";
 import { z } from "zod";
+import { ulid } from "ulid";
 import { DEPENDENCY_TOKENS } from "../../tokens.js";
 import { fail, ok, type Result } from "../../../shared/result.js";
 import type { PasswordHasher } from "../contracts/password-hasher.js";
 import type { AuthService } from "../contracts/auth-service.js";
 import type { UserRepository } from "../ports/user-repository.js";
+import type {
+  SessionCache,
+  SessionCacheEntry,
+} from "../contracts/session-cache.js";
 
 export interface LoginInput {
   email: string;
@@ -26,7 +31,9 @@ export class LoginUseCase {
     @inject(DEPENDENCY_TOKENS.passwordHasher)
     private readonly passwordHasher: PasswordHasher,
     @inject(DEPENDENCY_TOKENS.authService)
-    private readonly authService: AuthService
+    private readonly authService: AuthService,
+    @inject(DEPENDENCY_TOKENS.sessionCache)
+    private readonly sessionCache: SessionCache
   ) {}
 
   async execute(input: LoginInput): Promise<Result<LoginOutput, LoginError>> {
@@ -57,11 +64,22 @@ export class LoginUseCase {
         memberships: user.memberships,
       };
 
+      const sessionId = ulid();
       const accessToken = await this.authService.signAccess(context);
       const refreshToken = await this.authService.signRefresh({
         userId: user.id,
         email: user.email,
+        sid: sessionId,
       });
+
+      const sessionEntry: SessionCacheEntry = {
+        sessionId,
+        userId: user.id,
+        accessToken,
+        refreshToken,
+      };
+
+      await this.sessionCache.saveSession(sessionEntry);
 
       return ok({ accessToken, refreshToken });
     } catch (error) {

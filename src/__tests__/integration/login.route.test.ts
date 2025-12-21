@@ -5,6 +5,10 @@ import request from "supertest";
 import { app } from "../../app.js";
 import { prisma } from "../../prisma/client.js";
 import { authEnvs } from "../../globals/envs.js";
+import { container } from "../../container.js";
+import type { SessionCache } from "../../users/application/contracts/session-cache.js";
+import { DEPENDENCY_TOKENS } from "../../users/tokens.js";
+import { InMemorySessionCache } from "../../users/infrastructure/cache/in-memory-session-cache.js";
 
 const baseUser = {
   id: "user-1",
@@ -23,6 +27,12 @@ const baseUser = {
 describe("/login (integration)", () => {
   afterEach(() => {
     jest.restoreAllMocks();
+    const sessionCache = container.resolve<SessionCache>(
+      DEPENDENCY_TOKENS.sessionCache
+    );
+    if (sessionCache instanceof InMemorySessionCache) {
+      sessionCache.clear();
+    }
   });
 
   it("should return HTTP 200 on valid login and include JWT token", async () => {
@@ -67,6 +77,17 @@ describe("/login (integration)", () => {
     expect(response.status).toBe(200);
     expect(typeof response.body.accessToken).toBe("string");
     expect(typeof response.body.refreshToken).toBe("string");
+
+    const sessionCache = container.resolve<SessionCache>(
+      DEPENDENCY_TOKENS.sessionCache
+    );
+    if (sessionCache instanceof InMemorySessionCache) {
+      const { sid } = jwt.verify(response.body.refreshToken, authEnvs.jwtSecret) as any;
+      const cached = sessionCache.get(sid);
+      expect(cached?.userId).toBe(baseUser.id);
+      expect(cached?.refreshToken).toBe(response.body.refreshToken);
+      expect(cached?.accessToken).toBe(response.body.accessToken);
+    }
   });
 
   it("JWT should contain userId, name, email, companyId, roles, branchIds", async () => {

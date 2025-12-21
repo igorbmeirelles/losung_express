@@ -4,6 +4,7 @@ export const DEPENDENCY_TOKENS = {
   signupUseCase: "SignupUseCase",
   loginUseCase: "LoginUseCase",
   authService: "AuthService",
+  sessionCache: "SessionCache",
 } as const;
 
 export type DependencyTokenKeys = keyof typeof DEPENDENCY_TOKENS;

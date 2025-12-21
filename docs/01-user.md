@@ -99,6 +99,7 @@ Company ownership is established **only after a company is created** and the use
 * The tenant is inferred from the URL or request context
 * Access rights depend on user roles
 * After authentication, the user may list all **branches** they belong to in order to select or inspect branch-specific data
+* On successful login, the system **must create a cache entry for the session**, storing `userId`, the issued **JWT**, and the **refresh token** to represent an active session.
 
 > Branch listing and branch detail access are part of the **Company module** and not the responsibility of the User module.
 
@@ -133,6 +134,21 @@ Company ownership is established **only after a company is created** and the use
 * Role evaluation is **secondary** and must not be used alone
 
 If the user is **not present in any `BoardMembers` record**, the system must treat the user as having **no company**.
+
+---
+
+### 3.5 `POST /login/refresh`
+
+**Intent**
+
+> As a user with an active session, I want to refresh my tokens to keep the session valid without re-entering credentials.
+
+**Notes**
+
+* Consumes the **refresh token** and the **cached session entry** created during `/login`
+* Must **rotate** refresh tokens; old tokens become unusable after rotation
+* Must update the session cache with the new JWT and refresh token
+* Must return HTTP 401 if the refresh token or session cache entry is missing, expired, or invalidated (e.g., after `/logout`)
 
 ---
 
@@ -211,6 +227,7 @@ Authenticate users and issue access tokens.
   * Load user roles and board memberships
   * Load associated company and branch IDs
   * Return authentication data wrapped in `Result`
+  * Create a **session cache entry** (keyed by user/session identifier) storing `userId`, JWT, and refresh token with appropriate TTL
 
 * [x] Define JWT payload
 
@@ -226,6 +243,8 @@ Authenticate users and issue access tokens.
 
   * Password verification delegation
   * JWT generation
+  * Refresh token generation and rotation strategy
+  * Session cache integration (write/update/invalidate)
 
 ---
 
@@ -239,6 +258,7 @@ Handle user logout.
 
 * [ ] Create LogoutController
 * [ ] Invalidate token or session (strategy-dependent)
+* [ ] **Remove or invalidate the session cache entry** created at login (JWT + refresh token) so that refresh attempts fail immediately
 
 ---
 
@@ -255,6 +275,22 @@ Check whether the authenticated user is associated with any company.
 
   * Query user memberships
   * Return boolean wrapped in `Result`
+
+---
+
+### 4.5 Implement `POST /login/refresh`
+
+#### Description
+
+Issue a new JWT and refresh token for an active session without re-authenticating credentials.
+
+#### Subtasks
+
+* [ ] Create RefreshLoginController (`/login/refresh`)
+* [ ] Validate refresh token and **verify session cache entry** exists and matches user/session identifiers
+* [ ] Rotate refresh token and generate new JWT
+* [ ] Update session cache with the new tokens and invalidate the previous refresh token
+* [ ] Return HTTP 401 when the refresh token is invalid, expired, revoked, or when the session cache entry is missing
 
 ---
 
@@ -305,6 +341,8 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 * [x] Should load user roles correctly
 * [x] Should load associated companyId and branchIds
 * [x] Should return authentication context as `Result.Success`
+* [ ] Should write a session cache entry containing `userId`, JWT, and refresh token with TTL
+* [ ] Should fail login if session cache write fails (to avoid orphaned tokens)
 
 #### Integration Tests — `/login`
 
@@ -312,6 +350,9 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 * [x] Should return JWT token
 * [x] JWT should contain userId, name, email, companyId, roles, branchIds
 * [x] Should reject login with invalid password
+* [ ] Should create a session cache entry with userId, JWT, refresh token
+* [ ] Should set cache TTLs consistent with JWT/refresh token expiry
+* [ ] Should not allow multiple active sessions to overwrite each other incorrectly (e.g., unique session key per device/identifier)
 
 ---
 
@@ -320,10 +361,12 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 #### Unit Tests
 
 * [ ] Should invalidate token or session according to strategy
+* [ ] Should remove session cache entry so that refresh attempts fail
 
 #### Integration Tests
 
 * [ ] Should return HTTP 204 on logout
+* [ ] Should prevent subsequent `/login/refresh` or authenticated requests using the old session tokens
 
 ---
 
@@ -348,6 +391,25 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 #### Integration Tests — `/users/has-company`
 
 * [ ] Should return correct ownership status for authenticated user
+
+---
+
+### 6.5 `/login/refresh` — Test Cases
+
+#### Unit Tests — RefreshLoginUseCase
+
+* [ ] Should issue a new JWT and refresh token when the refresh token and session cache entry are valid
+* [ ] Should rotate refresh token and invalidate the previous one
+* [ ] Should reject refresh when the session cache entry is missing or expired
+* [ ] Should reject refresh when the refresh token is invalid or revoked
+* [ ] Should update session cache with the new tokens atomically (no stale cache entries)
+
+#### Integration Tests — `/login/refresh`
+
+* [ ] Should return HTTP 200 with new JWT and refresh token
+* [ ] Should return HTTP 401 when refresh token is invalid, expired, or revoked
+* [ ] Should return HTTP 401 when the session cache entry has been removed (e.g., after `/logout`)
+* [ ] Should ensure old refresh token cannot be reused after rotation
 
 ---
 

@@ -19,6 +19,11 @@ DatabaseSchema.parse({
   directUrl: process.env.DIRECT_URL,
 });
 
+const CacheSchema = z.object({
+  upstashRedisUrl: z.string().url(),
+  upstashRedisToken: z.string(),
+});
+
 export const AuthSchema = z.object({
   jwtSecret: z.string(),
 
@@ -31,4 +36,9 @@ export const authEnvs = AuthSchema.parse({
   jwtSecret: process.env.JWT_SECRET,
   jwtExpiresIn: process.env.JWT_EXPIRES_IN,
   refreshExpiresIn: process.env.JWT_REFRESH_EXPIRES_IN,
+});
+
+export const cacheEnvs = CacheSchema.parse({
+  upstashRedisUrl: process.env.UPSTASH_REDIS_REST_URL ?? "http://localhost:6379",
+  upstashRedisToken: process.env.UPSTASH_REDIS_REST_TOKEN ?? "test-token",
 });

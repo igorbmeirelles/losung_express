@@ -3,6 +3,11 @@ import { LoginUseCase } from "../../users/application/use-cases/login.use-case.j
 import type { AuthService } from "../../users/application/contracts/auth-service.js";
 import type { PasswordHasher } from "../../users/application/contracts/password-hasher.js";
 import type { AuthUser, UserRepository } from "../../users/application/ports/user-repository.js";
+import type {
+  SessionCache,
+  SessionCacheEntry,
+} from "../../users/application/contracts/session-cache.js";
+import * as ulidModule from "ulid";
 
 class StubUserRepository implements UserRepository {
   constructor(private authUser: AuthUser | null) {}
@@ -37,6 +42,16 @@ class StubAuthService implements AuthService {
   }
 }
 
+class StubSessionCache implements SessionCache {
+  saveSessionMock: jest.MockedFunction<(entry: SessionCacheEntry) => Promise<void>> = jest.fn();
+  deleteSession(): Promise<void> {
+    throw new Error("not implemented");
+  }
+  saveSession(entry: SessionCacheEntry): Promise<void> {
+    return this.saveSessionMock(entry);
+  }
+}
+
 const baseUser: AuthUser = {
   id: "u1",
   firstName: "John",
@@ -52,15 +67,25 @@ const baseUser: AuthUser = {
 };
 
 describe("LoginUseCase (unit)", () => {
+  beforeEach(() => {
+    jest.spyOn(ulidModule, "ulid").mockReturnValue("01HSESSIONCACHEID");
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
   it("authenticates valid credentials and returns token/context", async () => {
     const repo = new StubUserRepository(baseUser);
     const hasher = new StubPasswordHasher();
     const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
     hasher.verifyMock.mockResolvedValueOnce(true);
     auth.signAccessMock.mockResolvedValueOnce("access");
     auth.signRefreshMock.mockResolvedValueOnce("refresh");
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
 
-    const useCase = new LoginUseCase(repo, hasher, auth);
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
 
     const result = await useCase.execute({
       email: baseUser.email,
@@ -78,10 +103,12 @@ describe("LoginUseCase (unit)", () => {
     const repo = new StubUserRepository(baseUser);
     const hasher = new StubPasswordHasher();
     const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
     hasher.verifyMock.mockResolvedValueOnce(true);
     auth.signAccessMock.mockResolvedValueOnce("token");
     auth.signRefreshMock.mockResolvedValueOnce("refresh");
-    const useCase = new LoginUseCase(repo, hasher, auth);
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
 
     await useCase.execute({ email: baseUser.email, password: "secret" });
 
@@ -92,8 +119,10 @@ describe("LoginUseCase (unit)", () => {
     const repo = new StubUserRepository(baseUser);
     const hasher = new StubPasswordHasher();
     const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
     hasher.verifyMock.mockResolvedValueOnce(false);
-    const useCase = new LoginUseCase(repo, hasher, auth);
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
 
     const result = await useCase.execute({
       email: baseUser.email,
@@ -113,6 +142,7 @@ describe("LoginUseCase (unit)", () => {
     });
     const hasher = new StubPasswordHasher();
     const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
     hasher.verifyMock.mockResolvedValueOnce(true);
     auth.signAccessMock.mockImplementation(async (payload) => {
       expect(payload).toMatchObject({
@@ -124,7 +154,8 @@ describe("LoginUseCase (unit)", () => {
       return "token";
     });
     auth.signRefreshMock.mockResolvedValueOnce("refresh");
-    const useCase = new LoginUseCase(repo, hasher, auth);
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
 
     const result = await useCase.execute({
       email: baseUser.email,
@@ -138,7 +169,9 @@ describe("LoginUseCase (unit)", () => {
     const repo = new StubUserRepository(null);
     const hasher = new StubPasswordHasher();
     const auth = new StubAuthService();
-    const useCase = new LoginUseCase(repo, hasher, auth);
+    const sessionCache = new StubSessionCache();
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
 
     const result = await useCase.execute({
       email: "missing@example.com",
@@ -146,5 +179,52 @@ describe("LoginUseCase (unit)", () => {
     });
 
     expect(result).toEqual({ success: false, error: "INVALID_CREDENTIALS" });
+  });
+
+  it("writes session cache entry with userId and tokens", async () => {
+    const repo = new StubUserRepository(baseUser);
+    const hasher = new StubPasswordHasher();
+    const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
+    hasher.verifyMock.mockResolvedValueOnce(true);
+    auth.signAccessMock.mockResolvedValueOnce("access");
+    auth.signRefreshMock.mockResolvedValueOnce("refresh");
+    sessionCache.saveSessionMock.mockResolvedValueOnce();
+
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
+
+    await useCase.execute({
+      email: baseUser.email,
+      password: "secret",
+    });
+
+    expect(sessionCache.saveSessionMock).toHaveBeenCalledWith(
+      expect.objectContaining({
+        sessionId: "01HSESSIONCACHEID",
+        userId: baseUser.id,
+        accessToken: "access",
+        refreshToken: "refresh",
+      })
+    );
+  });
+
+  it("fails login if session cache write fails", async () => {
+    const repo = new StubUserRepository(baseUser);
+    const hasher = new StubPasswordHasher();
+    const auth = new StubAuthService();
+    const sessionCache = new StubSessionCache();
+    hasher.verifyMock.mockResolvedValueOnce(true);
+    auth.signAccessMock.mockResolvedValueOnce("access");
+    auth.signRefreshMock.mockResolvedValueOnce("refresh");
+    sessionCache.saveSessionMock.mockRejectedValueOnce(new Error("cache down"));
+
+    const useCase = new LoginUseCase(repo, hasher, auth, sessionCache);
+
+    const result = await useCase.execute({
+      email: baseUser.email,
+      password: "secret",
+    });
+
+    expect(result).toEqual({ success: false, error: "UNEXPECTED" });
   });
 });
