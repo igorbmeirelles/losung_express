@@ -1,0 +1,430 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client"
+  output   = "./generated/prisma"
+}
+
+model User {
+  id           String         @id @default(uuid()) @map("id") @db.Uuid
+  firstName    String         @map("first_name")
+  lastName     String         @map("last_name")
+  email        String
+  password     String
+  isActive     Boolean        @map("is_active")
+  companyId    String?        @map("company_id")
+  BoardMembers BoardMembers[]
+  Customer     Customer[]
+
+  @@unique([email])
+}
+
+model Customer {
+  id        String  @id @default(ulid()) @map("id")
+  firstName String  @map("first_name")
+  lastName  String  @map("last_name")
+  phone     String  @map("phone")
+  email     String? @map("email")
+  avatar    String?
+
+  location   Location @relation(fields: [locationId], references: [id])
+  locationId String   @map("location_id")
+
+  user   User?   @relation(fields: [userId], references: [id])
+  userId String? @map("user_id") @db.Uuid
+
+  company   Company? @relation(fields: [companyId], references: [id])
+  companyId String?
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  Order Order[]
+}
+
+model Address {
+  id           String     @id @default(ulid()) @map("id")
+  street       String     @map("street")
+  neighborhood String     @map("neighborhood")
+  city         String     @map("city")
+  country      String     @map("country")
+  zipCode      String     @map("zip_code")
+  createdAt    DateTime   @default(now()) @map("created_at")
+  location     Location[]
+}
+
+model Location {
+  id         String     @id @default(ulid()) @map("id")
+  complement String?    @map("complement")
+  number     String     @map("number")
+  addressId  String     @map("address_id")
+  createdAt  DateTime   @default(now()) @map("created_at")
+  updatedAt  DateTime   @updatedAt @map("updated_at")
+  addresses  Address    @relation(fields: [addressId], references: [id])
+  branchId   String?    @map("branch_id")
+  Branch     Branch?
+  Customer   Customer[]
+  Order      Order[]
+}
+
+model Supplier {
+  id        String    @id @default(ulid()) @map("id")
+  name      String    @map("name")
+  createdAt DateTime  @default(now()) @map("created_at")
+  updatedAt DateTime  @updatedAt @map("updated_at")
+  companyId String    @map("company_id")
+  company   Company   @relation(fields: [companyId], references: [id])
+  Invoice   Invoice[]
+}
+
+model Company {
+  id           String         @id @default(ulid()) @map("id")
+  name         String         @map("name")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  isActive     Boolean        @map("is_active")
+  tenantUrl    String         @map("tenant_url")
+  supplier     Supplier[]
+  branches     Branch[]
+  BoardMembers BoardMembers[]
+  Warehouse    Warehouse[]
+  Product      Product[]
+  Attribute    Attribute[]
+  Category     Category[]
+  customers    Customer[]
+}
+
+model Branch {
+  id              String            @id @default(ulid()) @map("id")
+  name            String            @map("name")
+  phone           String            @map("phone")
+  location        Location          @relation(fields: [locationId], references: [id])
+  locationId      String            @unique @map("location_id")
+  companyId       String            @map("company_id")
+  isActive        Boolean           @map("is_active")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  company         Company           @relation(fields: [companyId], references: [id])
+  BoardMembers    BoardMembers[]
+  BranchWarehouse BranchWarehouse[]
+  Order           Order[]
+}
+
+model BoardMembers {
+  id             String           @id @default(ulid()) @map("id")
+  isActive       Boolean          @map("is_active")
+  createdAt      DateTime         @default(now()) @map("created_at")
+  updatedAt      DateTime         @updatedAt @map("updated_at")
+  user           User             @relation(fields: [userId], references: [id])
+  userId         String           @map("user_id") @db.Uuid
+  companyId      String           @map("company_id")
+  company        Company          @relation(fields: [companyId], references: [id])
+  branchId       String?          @map("branch_id")
+  branch         Branch?          @relation(fields: [branchId], references: [id])
+  MembershipRole MembershipRole[]
+}
+
+enum EUserRoles {
+  ROOT
+  COMPANY_OWNER
+  COMPANY_ADMIN
+  BRANCH_OWNER
+  BRANCH_ADMIN
+  SELLER
+  STOCK_ADMIN
+  STOCK_DISPATCHER
+  DRIVER
+}
+
+model MembershipRole {
+  id            BigInt       @id @default(dbgenerated())
+  role          EUserRoles
+  boardMember   BoardMembers @relation(fields: [boardMemberId], references: [id])
+  boardMemberId String       @map("board_member_id")
+
+  @@unique([boardMemberId, role])
+}
+
+model Warehouse {
+  id                String              @id @default(ulid()) @map("id")
+  name              String              @map("name")
+  isActive          Boolean             @map("is_active")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  company           Company             @relation(fields: [companyId], references: [id])
+  companyId         String              @map("company_id")
+  BranchWarehouse   BranchWarehouse[]
+  Stock             Stock[]
+  inventoryProducts InventoryProducts[]
+
+  @@unique([id, companyId])
+}
+
+model BranchWarehouse {
+  id          String    @id @default(ulid()) @map("id")
+  isActive    Boolean   @map("is_active")
+  warehouseId String    @map("warehouse_id")
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  branchId    String    @map("branch_id")
+  branch      Branch    @relation(fields: [branchId], references: [id])
+
+  @@unique([warehouseId, branchId])
+}
+
+model Category {
+  id        String     @id @default(ulid())
+  name      String
+  parentId  String?
+  parent    Category?  @relation("CategoryParent", fields: [parentId], references: [id])
+  children  Category[] @relation("CategoryParent")
+  Product   Product[]
+  company   Company    @relation(fields: [companyId], references: [id])
+  companyId String     @map("company_id")
+}
+
+model Product {
+  id          String   @id @default(ulid()) @map("id")
+  name        String   @map("name")
+  description String   @map("description")
+  isActive    Boolean  @map("is_active")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  sku         SKU[]
+  category    Category @relation(fields: [categoryId], references: [id])
+  categoryId  String
+  companyId   String   @map("company_id")
+  company     Company  @relation(fields: [companyId], references: [id])
+}
+
+model SKU {
+  id                String              @id @default(ulid()) @map("id")
+  code              String              @map("code")
+  createdAt         DateTime            @default(now()) @map("created_at")
+  updatedAt         DateTime            @updatedAt @map("updated_at")
+  skuAttributes     SkuAttribute[]
+  productId         String              @map("product_id")
+  product           Product             @relation(fields: [productId], references: [id])
+  OrderItem         OrderItem[]
+  Stock             Stock[]
+  Price             Price[]
+  InvoiceItem       InvoiceItem[]
+  skuImages         SKUImage[]
+  inventoryProducts InventoryProducts[]
+
+  @@unique([productId, code])
+}
+
+model SKUImage {
+  id    String @id @default(ulid()) @map("id")
+  url   String
+  skuId String @map("sku_id")
+  SKU   SKU    @relation(fields: [skuId], references: [id])
+}
+
+model Attribute {
+  id        String   @id @default(ulid()) @map("id")
+  name      String   @map("name")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  Option    Option[]
+  company   Company  @relation(fields: [companyId], references: [id])
+  companyId String   @map("company_id")
+
+  @@unique([companyId, name])
+}
+
+model Option {
+  id           String         @id @default(ulid()) @map("id")
+  name         String         @map("name")
+  createdAt    DateTime       @default(now()) @map("created_at")
+  updatedAt    DateTime       @updatedAt @map("updated_at")
+  attributeId  String?        @map("attribute_id")
+  attribute    Attribute?     @relation(fields: [attributeId], references: [id])
+  skuAttribute SkuAttribute[]
+
+  @@unique([attributeId, name])
+}
+
+enum ESkuAttributeType {
+  VARIATION
+  TECHNICAL
+}
+
+model SkuAttribute {
+  id        String            @id @default(ulid()) @map("id")
+  createdAt DateTime          @default(now()) @map("created_at")
+  updatedAt DateTime          @updatedAt @map("updated_at")
+  optionId  String            @map("option_id")
+  option    Option            @relation(fields: [optionId], references: [id])
+  type      ESkuAttributeType @map("type")
+  skuId     String            @map("sku_id")
+  sku       SKU               @relation(fields: [skuId], references: [id])
+}
+
+model Stock {
+  id          String    @id @default(ulid()) @map("id")
+  amount      Int       @map("amount")
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  warehouseId String    @map("warehouse_id")
+  sku         SKU       @relation(fields: [skuId], references: [id])
+  skuId       String    @map("sku_id")
+
+  @@unique([warehouseId, skuId])
+}
+
+model Price {
+  id               String    @id @default(ulid()) @map("id")
+  value            Decimal   @map("value")
+  promotionalValue Decimal?  @map("promotional_value")
+  validFrom        DateTime
+  validTo          DateTime?
+  createdAt        DateTime  @default(now()) @map("created_at")
+  updatedAt        DateTime  @updatedAt @map("updated_at")
+  Sku              SKU       @relation(fields: [skuId], references: [id])
+  skuId            String    @map("sku_id")
+
+  @@index([skuId, validFrom])
+}
+
+enum EOrderStatus {
+  PENDING
+  APPROVED
+  WAITING_DELIVERY
+  IN_ROUTE
+  DELIVERED
+  DELIVER_FAIL
+  CANCELLED
+  DECLINED
+  REFUNDED
+  COMPLETED
+}
+
+enum EOrderPaymentMethod {
+  PIX
+  DEBIT
+  CREDIT
+}
+
+model Order {
+  id            String              @id @default(ulid()) @map("id")
+  issuedAt      DateTime            @map("issued_at")
+  status        EOrderStatus        @map("status")
+  method        EOrderPaymentMethod @map("method")
+  total         Decimal             @map("total")
+  subtotal      Decimal             @map("subtotal")
+  discount      Decimal             @map("discount")
+  freight       Decimal             @map("freight")
+  payableAmount Decimal             @map("payable_amount")
+  createdAt     DateTime            @default(now()) @map("created_at")
+  updatedAt     DateTime            @updatedAt @map("updated_at")
+  orderItems    OrderItem[]
+  shipment      Shipment?           @relation(fields: [shipmentId], references: [id])
+  shipmentId    String?             @unique @map("shipment_id")
+  location      Location            @relation(fields: [locationId], references: [id])
+  locationId    String              @map("location_id")
+  branch        Branch              @relation(fields: [branchId], references: [id])
+  branchId      String              @map("branch_id")
+  customer      Customer            @relation(fields: [customerId], references: [id])
+  customerId    String              @map("customer_id")
+  Installment   Installment[]
+}
+
+model OrderItem {
+  id        String   @id @default(ulid()) @map("id")
+  quantity  Int      @map("quantity")
+  price     Decimal  @map("price")
+  discount  Decimal  @map("discount")
+  name      String   @map("name")
+  skuId     String   @map("sku_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  sku       SKU      @relation(fields: [skuId], references: [id])
+  Order     Order    @relation(fields: [orderId], references: [id])
+  orderId   String   @map("order_id")
+}
+
+model Shipment {
+  id              String            @id @default(ulid()) @map("id")
+  freight         Decimal           @map("freight")
+  discount        Decimal           @map("discount")
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+  ShipmentAttempt ShipmentAttempt[]
+  order           Order?
+}
+
+enum EShipmentAttemptStatus {
+  WAITING
+  IN_ROUTE
+  FINISHED
+}
+
+model ShipmentAttempt {
+  id         String                 @id @default(ulid()) @map("id")
+  createdAt  DateTime               @default(now()) @map("created_at")
+  updatedAt  DateTime               @updatedAt @map("updated_at")
+  status     EShipmentAttemptStatus @map("status")
+  shipmentId String                 @map("shipment_id")
+  Shipment   Shipment               @relation(fields: [shipmentId], references: [id])
+}
+
+model Invoice {
+  id            String               @id @default(ulid()) @map("id")
+  number        String               @map("number")
+  issueDate     DateTime             @map("issue_date")
+  totalValue    Decimal              @map("total_value")
+  paymentDate   DateTime?            @map("payment_date")
+  paymentMethod EOrderPaymentMethod? @map("payment_method")
+  status        String               @map("status")
+  createdAt     DateTime             @default(now()) @map("created_at")
+  updatedAt     DateTime             @updatedAt @map("updated_at")
+  supplierId    String               @map("supplier_id")
+  supplier      Supplier             @relation(fields: [supplierId], references: [id])
+  InvoiceItem   InvoiceItem[]
+}
+
+model InvoiceItem {
+  id        String   @id @default(ulid()) @map("id")
+  quantity  Int      @map("quantity")
+  price     Decimal  @map("price")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  invoiceId String   @map("invoice_id")
+  invoice   Invoice  @relation(fields: [invoiceId], references: [id])
+  skuId     String   @map("sku_id")
+  sku       SKU      @relation(fields: [skuId], references: [id])
+}
+
+model Installment {
+  id        String   @id @default(ulid()) @map("id")
+  quantity  Int      @map("quantity")
+  value     Decimal  @map("value")
+  dueDate   DateTime @map("due_date")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+  orderId   String   @map("order_id")
+  order     Order    @relation(fields: [orderId], references: [id])
+}
+
+model Inventory {
+  id        String   @id @default(ulid()) @map("id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  InventoryProducts InventoryProducts[]
+}
+
+model InventoryProducts {
+  id          String    @id @default(ulid()) @map("id")
+  skuId       String    @map("sku_id")
+  sku         SKU       @relation(fields: [skuId], references: [id])
+  warehouseId String    @map("warehouse_id")
+  warehouse   Warehouse @relation(fields: [warehouseId], references: [id])
+  quantity    Decimal
+  inventoryId String    @map("inventory_id")
+  Inventory   Inventory @relation(fields: [inventoryId], references: [id])
+}
