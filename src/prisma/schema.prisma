@@ -3,12 +3,12 @@ datasource db {
 }
 
 generator client {
-  provider = "prisma-client"
+  provider = "prisma-client-js"
   output   = "./generated/prisma"
 }
 
 model User {
-  id           String         @id @default(uuid()) @map("id") @db.Uuid
+  id           String         @id @default(ulid()) @map("id")
   firstName    String         @map("first_name")
   lastName     String         @map("last_name")
   email        String
@@ -33,7 +33,7 @@ model Customer {
   locationId String   @map("location_id")
 
   user   User?   @relation(fields: [userId], references: [id])
-  userId String? @map("user_id") @db.Uuid
+  userId String? @map("user_id")
 
   company   Company? @relation(fields: [companyId], references: [id])
   companyId String?
@@ -118,7 +118,7 @@ model BoardMembers {
   createdAt      DateTime         @default(now()) @map("created_at")
   updatedAt      DateTime         @updatedAt @map("updated_at")
   user           User             @relation(fields: [userId], references: [id])
-  userId         String           @map("user_id") @db.Uuid
+  userId         String           @map("user_id")
   companyId      String           @map("company_id")
   company        Company          @relation(fields: [companyId], references: [id])
   branchId       String?          @map("branch_id")

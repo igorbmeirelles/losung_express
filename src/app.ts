@@ -1,3 +1,4 @@
+import "dotenv/config";
 import express from "express";
 import { applicationEnvs } from "./globals/envs.js";
 
