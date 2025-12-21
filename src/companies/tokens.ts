@@ -5,6 +5,7 @@ export const COMPANY_DEPENDENCY_TOKENS = {
   createCompanyUseCase: "CreateCompanyUseCase",
   listBranchesUseCase: "ListBranchesUseCase",
   branchQuery: "BranchQuery",
+  createEmployeeUseCase: "CreateEmployeeUseCase",
 } as const;
 
 export type CompanyDependencyKeys = keyof typeof COMPANY_DEPENDENCY_TOKENS;

@@ -23,6 +23,8 @@ import { CompanyController } from "./companies/infrastructure/http/company.contr
 import { ListBranchesUseCase } from "./companies/application/use-cases/list-branches.use-case.js";
 import { PrismaBranchQuery } from "./companies/infrastructure/repositories/prisma-branch.query.js";
 import { ListBranchesController } from "./companies/infrastructure/http/list-branches.controller.js";
+import { CreateEmployeeUseCase } from "./companies/application/use-cases/create-employee.use-case.js";
+import { CreateEmployeeController } from "./companies/infrastructure/http/create-employee.controller.js";
 import { COMPANY_DEPENDENCY_TOKENS } from "./companies/tokens.js";
 import { DEPENDENCY_TOKENS } from "./users/tokens.js";
 
@@ -72,5 +74,10 @@ container.registerSingleton(
   PrismaBranchQuery
 );
 container.registerSingleton(ListBranchesController, ListBranchesController);
+container.registerSingleton(
+  COMPANY_DEPENDENCY_TOKENS.createEmployeeUseCase,
+  CreateEmployeeUseCase
+);
+container.registerSingleton(CreateEmployeeController, CreateEmployeeController);
 
 export { container };

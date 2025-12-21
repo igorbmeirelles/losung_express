@@ -189,12 +189,12 @@ Add employees to a company with role-based access control.
 
 #### Subtasks
 
-* [ ] Create CreateEmployeeController
+* [x] Create CreateEmployeeController
 
   * Validate input with Zod
   * Extract roles and branchIds from JWT
 
-* [ ] Create CreateEmployeeUseCase
+* [x] Create CreateEmployeeUseCase
 
   * Validate creator role
   * Validate branch scope
@@ -240,17 +240,17 @@ Add employees to a company with role-based access control.
 
 #### Unit Tests — CreateEmployeeUseCase
 
-* [ ] Should allow COMPANY_OWNER to create employees in any branch
-* [ ] Should allow COMPANY_ADMIN to create employees in any branch
-* [ ] Should restrict BRANCH_OWNER to own branches only
-* [ ] Should restrict BRANCH_ADMIN to own branches only
-* [ ] Should reject unauthorized roles
+* [x] Should allow COMPANY_OWNER to create employees in any branch
+* [x] Should allow COMPANY_ADMIN to create employees in any branch
+* [x] Should restrict BRANCH_OWNER to own branches only
+* [x] Should restrict BRANCH_ADMIN to own branches only
+* [x] Should reject unauthorized roles
 
 #### Integration Tests
 
-* [ ] Should return HTTP 201 on success
-* [ ] Should persist user and board membership
-* [ ] Should reject invalid branch assignment
+* [x] Should return HTTP 201 on success
+* [x] Should persist user and board membership
+* [x] Should reject invalid branch assignment
 
 ---
 
