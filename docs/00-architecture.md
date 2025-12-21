@@ -193,6 +193,9 @@ Examples:
 * Prisma is an infrastructure detail
 * Repositories implement domain interfaces
 * Prisma must never be imported into the domain
+* Banco em produção: usar o provider do Supabase (Postgres gerenciado)
+* Banco para testes: usar SQLite isolado
+* Todo teste deve iniciar com o banco zerado (sem dados herdados de execuções anteriores)
 
 ---
 
@@ -201,6 +204,8 @@ Examples:
 * Authentication: JWT
 * Authorization: RBAC based on roles
 * The domain layer must not be aware of JWT
+* Every private route must compose the correct middlewares: authentication (JWT validation) and authorization (RBAC guard) applied in that order.
+* Refresh tokens issued during login must be stored in the Redis cache (Upstash-managed) to enable rotation and revocation; never persist them directly in controllers or long-lived storage.
 
 ---
 
