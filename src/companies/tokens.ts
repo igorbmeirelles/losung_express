@@ -3,6 +3,8 @@ export const COMPANY_DEPENDENCY_TOKENS = {
   branchRepository: "BranchRepository",
   boardMembersRepository: "BoardMembersRepository",
   createCompanyUseCase: "CreateCompanyUseCase",
+  listBranchesUseCase: "ListBranchesUseCase",
+  branchQuery: "BranchQuery",
 } as const;
 
 export type CompanyDependencyKeys = keyof typeof COMPANY_DEPENDENCY_TOKENS;

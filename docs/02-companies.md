@@ -173,8 +173,8 @@ List branches accessible to the authenticated user.
 
 #### Subtasks
 
-* [ ] Create ListBranchesController
-* [ ] Create ListBranchesUseCase
+* [x] Create ListBranchesController
+* [x] Create ListBranchesUseCase
 
   * Read branchIds from JWT
   * Load branch details
@@ -227,12 +227,12 @@ Add employees to a company with role-based access control.
 
 #### Unit Tests — ListBranchesUseCase
 
-* [ ] Should list only branches from JWT context
-* [ ] Should not expose branches from other companies
+* [x] Should list only branches from JWT context
+* [x] Should not expose branches from other companies
 
 #### Integration Tests
 
-* [ ] Should return HTTP 200 with branch list
+* [x] Should return HTTP 200 with branch list
 
 ---
 
