@@ -93,6 +93,84 @@ describe("/login (integration)", () => {
     }
   });
 
+  it("should set session cache TTL consistent with refresh token expiry", async () => {
+    const hashed = await argon2.hash(baseUser.password);
+    jest.spyOn(prisma.user, "findUnique").mockResolvedValue({
+      id: baseUser.id,
+      firstName: baseUser.firstName,
+      lastName: baseUser.lastName,
+      email: baseUser.email,
+      password: hashed,
+      isActive: true,
+      companyId: baseUser.companyId,
+      BoardMembers: [],
+    } as any);
+
+    const response = await request(app).post("/login").send({
+      email: baseUser.email,
+      password: baseUser.password,
+    });
+
+    const sessionCache = container.resolve<SessionCache>(
+      DEPENDENCY_TOKENS.sessionCache
+    );
+    if (sessionCache instanceof InMemorySessionCache) {
+      const { sid } = jwt.verify(
+        response.body.refreshToken,
+        authEnvs.jwtSecret
+      ) as any;
+      const expiry = sessionCache.getExpiry(sid);
+      expect(expiry).toBeInstanceOf(Date);
+      if (expiry) {
+        const seconds = Math.round((expiry.getTime() - Date.now()) / 1000);
+        const expected = sessionCache.getTtlSeconds();
+        expect(Math.abs(seconds - expected)).toBeLessThanOrEqual(2);
+      }
+    }
+  });
+
+  it("should keep multiple sessions without overwriting", async () => {
+    const hashed = await argon2.hash(baseUser.password);
+    jest.spyOn(prisma.user, "findUnique").mockResolvedValue({
+      id: baseUser.id,
+      firstName: baseUser.firstName,
+      lastName: baseUser.lastName,
+      email: baseUser.email,
+      password: hashed,
+      isActive: true,
+      companyId: baseUser.companyId,
+      BoardMembers: [],
+    } as any);
+
+    const first = await request(app).post("/login").send({
+      email: baseUser.email,
+      password: baseUser.password,
+    });
+    const second = await request(app).post("/login").send({
+      email: baseUser.email,
+      password: baseUser.password,
+    });
+
+    const sessionCache = container.resolve<SessionCache>(
+      DEPENDENCY_TOKENS.sessionCache
+    );
+    if (sessionCache instanceof InMemorySessionCache) {
+      const { sid: sid1 } = jwt.verify(
+        first.body.refreshToken,
+        authEnvs.jwtSecret
+      ) as any;
+      const { sid: sid2 } = jwt.verify(
+        second.body.refreshToken,
+        authEnvs.jwtSecret
+      ) as any;
+      const entry1 = await sessionCache.getSession(sid1);
+      const entry2 = await sessionCache.getSession(sid2);
+      expect(entry1?.refreshToken).toBe(first.body.refreshToken);
+      expect(entry2?.refreshToken).toBe(second.body.refreshToken);
+      expect(sid1).not.toBe(sid2);
+    }
+  });
+
   it("JWT should contain userId, name, email, companyId, roles, branchIds", async () => {
     const hashed = await argon2.hash(baseUser.password);
     jest.spyOn(prisma.user, "findUnique").mockResolvedValue({

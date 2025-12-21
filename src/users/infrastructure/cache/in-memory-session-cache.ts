@@ -39,6 +39,14 @@ export class InMemorySessionCache implements SessionCache {
     };
   }
 
+  getTtlSeconds(): number {
+    return this.ttlSeconds;
+  }
+
+  getExpiry(sessionId: string): Date | undefined {
+    return this.sessions.get(sessionId)?.expiresAt;
+  }
+
   clear(): void {
     this.sessions.clear();
   }

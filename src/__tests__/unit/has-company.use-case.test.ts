@@ -88,4 +88,30 @@ describe("HasCompanyUseCase (unit)", () => {
 
     expect(result).toEqual({ success: true, value: { hasCompany: false } });
   });
+
+  it("does not infer ownership from roles alone when memberships are empty", async () => {
+    const auth = new StubAuthService();
+    auth.verifyAccessMock.mockResolvedValue({ userId: "u1" });
+    const repo = new StubUserRepository([]);
+
+    const useCase = new HasCompanyUseCase(auth, repo);
+
+    const result = await useCase.execute({ accessToken: "token" });
+
+    expect(result).toEqual({ success: true, value: { hasCompany: false } });
+  });
+
+  it("returns true when user has active Company Owner membership", async () => {
+    const auth = new StubAuthService();
+    auth.verifyAccessMock.mockResolvedValue({ userId: "u1" });
+    const repo = new StubUserRepository([
+      { isActive: true, role: "COMPANY_OWNER", branchId: null, companyId: "c1" },
+    ]);
+
+    const useCase = new HasCompanyUseCase(auth, repo);
+
+    const result = await useCase.execute({ accessToken: "token" });
+
+    expect(result).toEqual({ success: true, value: { hasCompany: true } });
+  });
 });

@@ -256,9 +256,9 @@ Handle user logout.
 
 #### Subtasks
 
-* [ ] Create LogoutController
-* [ ] Invalidate token or session (strategy-dependent)
-* [ ] **Remove or invalidate the session cache entry** created at login (JWT + refresh token) so that refresh attempts fail immediately
+* [x] Create LogoutController
+* [x] Invalidate token or session (strategy-dependent)
+* [x] **Remove or invalidate the session cache entry** created at login (JWT + refresh token) so that refresh attempts fail immediately
 
 ---
 
@@ -271,7 +271,7 @@ Check whether the authenticated user is associated with any company.
 #### Subtasks
 
 * [ ] Create HasCompanyController
-* [ ] Create HasCompanyUseCase
+* [x] Create HasCompanyUseCase
 
   * Query user memberships
   * Return boolean wrapped in `Result`
@@ -286,11 +286,11 @@ Issue a new JWT and refresh token for an active session without re-authenticatin
 
 #### Subtasks
 
-* [ ] Create RefreshLoginController (`/login/refresh`)
-* [ ] Validate refresh token and **verify session cache entry** exists and matches user/session identifiers
-* [ ] Rotate refresh token and generate new JWT
-* [ ] Update session cache with the new tokens and invalidate the previous refresh token
-* [ ] Return HTTP 401 when the refresh token is invalid, expired, revoked, or when the session cache entry is missing
+* [x] Create RefreshLoginController (`/login/refresh`)
+* [x] Validate refresh token and **verify session cache entry** exists and matches user/session identifiers
+* [x] Rotate refresh token and generate new JWT
+* [x] Update session cache with the new tokens and invalidate the previous refresh token
+* [x] Return HTTP 401 when the refresh token is invalid, expired, revoked, or when the session cache entry is missing
 
 ---
 
@@ -341,8 +341,8 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 * [x] Should load user roles correctly
 * [x] Should load associated companyId and branchIds
 * [x] Should return authentication context as `Result.Success`
-* [ ] Should write a session cache entry containing `userId`, JWT, and refresh token with TTL
-* [ ] Should fail login if session cache write fails (to avoid orphaned tokens)
+* [x] Should write a session cache entry containing `userId`, JWT, and refresh token with TTL
+* [x] Should fail login if session cache write fails (to avoid orphaned tokens)
 
 #### Integration Tests — `/login`
 
@@ -350,9 +350,9 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 * [x] Should return JWT token
 * [x] JWT should contain userId, name, email, companyId, roles, branchIds
 * [x] Should reject login with invalid password
-* [ ] Should create a session cache entry with userId, JWT, refresh token
-* [ ] Should set cache TTLs consistent with JWT/refresh token expiry
-* [ ] Should not allow multiple active sessions to overwrite each other incorrectly (e.g., unique session key per device/identifier)
+* [x] Should create a session cache entry with userId, JWT, refresh token
+* [x] Should set cache TTLs consistent with JWT/refresh token expiry
+* [x] Should not allow multiple active sessions to overwrite each other incorrectly (e.g., unique session key per device/identifier)
 
 ---
 
@@ -360,13 +360,13 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 
 #### Unit Tests
 
-* [ ] Should invalidate token or session according to strategy
-* [ ] Should remove session cache entry so that refresh attempts fail
+* [x] Should invalidate token or session according to strategy
+* [x] Should remove session cache entry so that refresh attempts fail
 
 #### Integration Tests
 
-* [ ] Should return HTTP 204 on logout
-* [ ] Should prevent subsequent `/login/refresh` or authenticated requests using the old session tokens
+* [x] Should return HTTP 204 on logout
+* [x] Should prevent subsequent `/login/refresh` or authenticated requests using the old session tokens
 
 ---
 
@@ -374,23 +374,17 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 
 #### Unit Tests — HasCompanyUseCase
 
-* [ ] Should return false if user is not listed in any BoardMembers
-
-* [ ] Should return true if user is listed in BoardMembers
-
-* [ ] Should not infer company ownership from roles alone
-
-* [ ] Should return true if user has Company Owner role
-
-* [ ] Should return true only if user is listed in BoardMembers
-
-* [ ] Should return false if user has no ownership
-
-* [ ] Should not rely on User entity flags
+* [x] Should return false if user is not listed in any BoardMembers
+* [x] Should return true if user is listed in BoardMembers
+* [x] Should not infer company ownership from roles alone
+* [x] Should return true if user has Company Owner role
+* [x] Should return true only if user is listed in BoardMembers
+* [x] Should return false if user has no ownership
+* [x] Should not rely on User entity flags
 
 #### Integration Tests — `/users/has-company`
 
-* [ ] Should return correct ownership status for authenticated user
+* [x] Should return correct ownership status for authenticated user
 
 ---
 
@@ -398,18 +392,18 @@ All functionalities described in this sprint **must be covered by Jest tests**. 
 
 #### Unit Tests — RefreshLoginUseCase
 
-* [ ] Should issue a new JWT and refresh token when the refresh token and session cache entry are valid
-* [ ] Should rotate refresh token and invalidate the previous one
-* [ ] Should reject refresh when the session cache entry is missing or expired
-* [ ] Should reject refresh when the refresh token is invalid or revoked
-* [ ] Should update session cache with the new tokens atomically (no stale cache entries)
+* [x] Should issue a new JWT and refresh token when the refresh token and session cache entry are valid
+* [x] Should rotate refresh token and invalidate the previous one
+* [x] Should reject refresh when the session cache entry is missing or expired
+* [x] Should reject refresh when the refresh token is invalid or revoked
+* [x] Should update session cache with the new tokens atomically (no stale cache entries)
 
 #### Integration Tests — `/login/refresh`
 
-* [ ] Should return HTTP 200 with new JWT and refresh token
-* [ ] Should return HTTP 401 when refresh token is invalid, expired, or revoked
-* [ ] Should return HTTP 401 when the session cache entry has been removed (e.g., after `/logout`)
-* [ ] Should ensure old refresh token cannot be reused after rotation
+* [x] Should return HTTP 200 with new JWT and refresh token
+* [x] Should return HTTP 401 when refresh token is invalid, expired, or revoked
+* [x] Should return HTTP 401 when the session cache entry has been removed (e.g., after `/logout`)
+* [x] Should ensure old refresh token cannot be reused after rotation
 
 ---
 

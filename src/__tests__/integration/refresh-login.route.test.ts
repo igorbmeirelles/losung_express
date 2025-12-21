@@ -99,4 +99,35 @@ describe("/login/refresh (integration)", () => {
 
     expect(response.status).toBe(401);
   });
+
+  it("prevents reuse of old refresh token after rotation", async () => {
+    const hashed = await argon2.hash(baseUser.password);
+    jest.spyOn(prisma.user, "findUnique").mockResolvedValue({
+      id: baseUser.id,
+      firstName: baseUser.firstName,
+      lastName: baseUser.lastName,
+      email: baseUser.email,
+      password: hashed,
+      isActive: true,
+      companyId: baseUser.companyId,
+      BoardMembers: [],
+    } as any);
+
+    const loginResponse = await request(app).post("/login").send({
+      email: baseUser.email,
+      password: baseUser.password,
+    });
+
+    const refreshResponse = await request(app)
+      .post("/login/refresh")
+      .send({ refreshToken: loginResponse.body.refreshToken });
+
+    expect(refreshResponse.status).toBe(200);
+
+    const reuseResponse = await request(app)
+      .post("/login/refresh")
+      .send({ refreshToken: loginResponse.body.refreshToken });
+
+    expect(reuseResponse.status).toBe(401);
+  });
 });
