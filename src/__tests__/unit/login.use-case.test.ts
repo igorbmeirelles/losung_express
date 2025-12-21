@@ -2,7 +2,7 @@ import { describe, expect, it, jest } from "@jest/globals";
 import { LoginUseCase } from "../../users/application/use-cases/login.use-case.js";
 import type { AuthService } from "../../users/application/contracts/auth-service.js";
 import type { PasswordHasher } from "../../users/application/contracts/password-hasher.js";
-import type { AuthUser, UserRepository } from "../../users/application/ports/user-repository.js";
+import type { AuthUser, BoardMembership, UserRepository } from "../../users/application/ports/user-repository.js";
 import type {
   SessionCache,
   SessionCacheEntry,
@@ -10,6 +10,9 @@ import type {
 
 class StubUserRepository implements UserRepository {
   constructor(private authUser: AuthUser | null) {}
+  findBoardMemberships(userId: string): Promise<BoardMembership[]> {
+    throw new Error("Method not implemented.");
+  }
 
   create(): Promise<any> {
     throw new Error("not implemented");
@@ -40,6 +43,9 @@ class StubAuthService implements AuthService {
     return this.signRefreshMock(payload);
   }
   verifyRefresh(): Promise<Record<string, unknown>> {
+    throw new Error("not implemented");
+  }
+  verifyAccess(): Promise<Record<string, unknown>> {
     throw new Error("not implemented");
   }
 }

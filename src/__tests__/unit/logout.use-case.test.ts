@@ -14,6 +14,9 @@ class StubAuthService implements AuthService {
   verifyRefresh(token: string): Promise<Record<string, unknown>> {
     return this.verifyRefreshMock(token);
   }
+  verifyAccess(): Promise<Record<string, unknown>> {
+    throw new Error("not implemented");
+  }
 }
 
 class StubSessionCache implements SessionCache {

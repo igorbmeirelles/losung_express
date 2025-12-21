@@ -2,6 +2,7 @@ import { injectable } from "tsyringe";
 import { prisma } from "../../../prisma/client.js";
 import type {
   AuthUser,
+  BoardMembership,
   CreateUserData,
   UserRecord,
   UserRepository,
@@ -31,6 +32,7 @@ export class PrismaUserRepository implements UserRepository {
       where: { email },
       include: {
         BoardMembers: {
+          where: { isActive: true },
           include: {
             MembershipRole: true,
           },
@@ -58,5 +60,23 @@ export class PrismaUserRepository implements UserRepository {
       companyId: user.companyId ?? null,
       memberships,
     };
+  }
+
+  async findBoardMemberships(userId: string): Promise<BoardMembership[]> {
+    const boardMembers = await prisma.boardMembers.findMany({
+      where: { userId, isActive: true },
+      include: {
+        MembershipRole: true,
+      },
+    });
+
+    return boardMembers.flatMap((membership) =>
+      membership.MembershipRole.map((role) => ({
+        isActive: membership.isActive,
+        role: role.role,
+        branchId: membership.branchId ?? null,
+        companyId: membership.companyId ?? null,
+      }))
+    );
   }
 }

@@ -17,9 +17,17 @@ export interface UserRecord {
   companyId: string | null;
 }
 
+export interface BoardMembership {
+  isActive: boolean;
+  role: string;
+  branchId: string | null;
+  companyId: string | null;
+}
+
 export interface UserRepository {
   create(data: CreateUserData): Promise<UserRecord>;
   findByEmailWithAuth(email: string): Promise<AuthUser | null>;
+  findBoardMemberships(userId: string): Promise<BoardMembership[]>;
 }
 
 export interface AuthUser {

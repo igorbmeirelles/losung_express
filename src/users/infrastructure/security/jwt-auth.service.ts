@@ -20,4 +20,8 @@ export class JwtAuthService implements AuthService {
   async verifyRefresh(token: string): Promise<Record<string, unknown>> {
     return jwt.verify(token, authEnvs.jwtSecret) as Record<string, unknown>;
   }
+
+  async verifyAccess(token: string): Promise<Record<string, unknown>> {
+    return jwt.verify(token, authEnvs.jwtSecret) as Record<string, unknown>;
+  }
 }

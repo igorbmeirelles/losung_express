@@ -16,6 +16,9 @@ class InMemoryUserRepository implements UserRepository {
   async findByEmailWithAuth(): Promise<any> {
     throw new Error("not implemented");
   }
+  async findBoardMemberships(): Promise<any> {
+    throw new Error("not implemented");
+  }
 
   async create(data: CreateUserData): Promise<UserRecord> {
     this.createMock.mock.calls.length === 0 &&
