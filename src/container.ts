@@ -25,7 +25,11 @@ import { PrismaBranchQuery } from "./companies/infrastructure/repositories/prism
 import { ListBranchesController } from "./companies/infrastructure/http/list-branches.controller.js";
 import { CreateEmployeeUseCase } from "./companies/application/use-cases/create-employee.use-case.js";
 import { CreateEmployeeController } from "./companies/infrastructure/http/create-employee.controller.js";
+import { PrismaWarehouseRepository } from "./warehouses/infrastructure/repositories/prisma-warehouse.repository.js";
+import { CreateWarehouseUseCase } from "./warehouses/application/use-cases/create-warehouse.use-case.js";
+import { CreateWarehouseController } from "./warehouses/infrastructure/http/create-warehouse.controller.js";
 import { COMPANY_DEPENDENCY_TOKENS } from "./companies/tokens.js";
+import { WAREHOUSE_DEPENDENCY_TOKENS } from "./warehouses/tokens.js";
 import { DEPENDENCY_TOKENS } from "./users/tokens.js";
 
 container.registerSingleton(DEPENDENCY_TOKENS.userRepository, PrismaUserRepository);
@@ -79,5 +83,14 @@ container.registerSingleton(
   CreateEmployeeUseCase
 );
 container.registerSingleton(CreateEmployeeController, CreateEmployeeController);
+container.registerSingleton(
+  WAREHOUSE_DEPENDENCY_TOKENS.warehouseRepository,
+  PrismaWarehouseRepository
+);
+container.registerSingleton(
+  WAREHOUSE_DEPENDENCY_TOKENS.createWarehouseUseCase,
+  CreateWarehouseUseCase
+);
+container.registerSingleton(CreateWarehouseController, CreateWarehouseController);
 
 export { container };

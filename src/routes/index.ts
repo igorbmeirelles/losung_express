@@ -4,6 +4,7 @@ import { buildLoginRouter } from "../users/infrastructure/http/login.router.js";
 import { buildLogoutRouter } from "../users/infrastructure/http/logout.router.js";
 import { buildHasCompanyRouter } from "../users/infrastructure/http/has-company.router.js";
 import { buildCompanyRouter } from "../companies/infrastructure/http/company.router.js";
+import { buildWarehouseRouter } from "../warehouses/infrastructure/http/warehouse.router.js";
 
 export function buildRoutes() {
   const router = Router();
@@ -13,6 +14,7 @@ export function buildRoutes() {
   router.use("/logout", buildLogoutRouter());
   router.use("/users/has-company", buildHasCompanyRouter());
   router.use("/companies", buildCompanyRouter());
+  router.use("/warehouses", buildWarehouseRouter());
 
   return router;
 }

@@ -5,8 +5,8 @@ This document defines the **Warehouse module**, its **business rules**, **access
 This document must be read together with:
 
 * `arquitetura.md`
-* `user-module-sprint-01.md`
-* `company-module-sprint-01.md`
+* `01-user.md`
+* `02-companies.md`
 
 ---
 
@@ -110,17 +110,17 @@ Create a warehouse scoped to the authenticated user's company.
 
 #### Subtasks
 
-* [ ] Create CreateWarehouseController
+* [x] Create CreateWarehouseController
 
   * Validate input with Zod
   * Extract user context from JWT
 
-* [ ] Create CreateWarehouseUseCase
+* [x] Create CreateWarehouseUseCase
 
   * Validate role (COMPANY_OWNER, COMPANY_ADMIN)
   * Create warehouse entity
 
-* [ ] Implement WarehouseRepository (Prisma)
+* [x] Implement WarehouseRepository (Prisma)
 
 ---
 
@@ -165,14 +165,14 @@ List warehouses visible to the authenticated user.
 
 #### Unit Tests — CreateWarehouseUseCase
 
-* [ ] Should allow COMPANY_OWNER to create warehouse
+* [x] Should allow COMPANY_OWNER to create warehouse
 * [ ] Should allow COMPANY_ADMIN to create warehouse
-* [ ] Should reject unauthorized roles
+* [x] Should reject unauthorized roles
 * [ ] Should scope warehouse to companyId
 
 #### Integration Tests
 
-* [ ] Should return HTTP 201 on success
+* [x] Should return HTTP 201 on success
 * [ ] Should persist warehouse correctly
 
 ---
