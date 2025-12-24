@@ -5,8 +5,8 @@ This document defines the **Category module**, its **business rules**, **access 
 This document must be read together with:
 
 * `arquitetura.md`
-* `user-module-sprint-01.md`
-* `company-module-sprint-01.md`
+* `01-user.md`
+* `02-companies.md`
 
 ---
 
@@ -130,20 +130,22 @@ Create a root or child category for the company.
 
 #### Subtasks
 
-* [ ] Create CreateCategoryController
+* [x] Create CreateCategoryController
 
   * Validate input with Zod
   * Accept optional `parentId`
   * Extract roles and branchIds from JWT
 
-* [ ] Create CreateCategoryUseCase
+* [x] Create CreateCategoryUseCase
 
   * Validate user role
   * Validate branch scope via JWT
   * Validate parent category existence (if provided)
   * Validate category is not already associated in the tree
   * Traverse ancestors to prevent cycles
-  * Enforce same-com### 4.2 Implement `GET /categories`
+  * Enforce same-com###
+
+4.2 Implement `GET /categories`
 
 #### Description
 
@@ -202,17 +204,17 @@ List categories visible to the authenticated user.
 
 #### Unit Tests — CreateCategoryUseCase
 
-* [ ] Should create a root category
-* [ ] Should create a child category with valid parent
+* [x] Should create a root category
+* [x] Should create a child category with valid parent
 * [ ] Should reject creation if category already exists in the tree
-* [ ] Should reject creation with invalid parentId
+* [x] Should reject creation with invalid parentId
 * [ ] Should reject cross-company parent association
-* [ ] Should reject unauthorized roles
-* [ ] Should prevent cyclic category trees
+* [x] Should reject unauthorized roles
+* [x] Should prevent cyclic category trees
 
 #### Integration Tests
 
-* [ ] Should return HTTP 201 on success
+* [x] Should return HTTP 201 on success
 * [ ] Should persist category correctly
 
 ---
