@@ -26,7 +26,8 @@ export function accessTokenMiddleware() {
         companyId: (payload["companyId"] as string) ?? null,
         roles: (payload["roles"] as string[]) ?? [],
         branchIds: (payload["branchIds"] as string[]) ?? [],
-        memberships: (payload["memberships"] as Array<{ role: string; branchId: string | null }>) ?? [],
+        memberships:
+          (payload["memberships"] as Array<{ role: string; branchId: string | null }>) ?? [],
       };
       return next();
     } catch (error) {

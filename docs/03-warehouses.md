@@ -132,15 +132,15 @@ Associate an existing warehouse with a branch.
 
 #### Subtasks
 
-* [ ] Create AssociateWarehouseBranchController
+* [x] Create AssociateWarehouseBranchController
 
-* [ ] Create AssociateWarehouseBranchUseCase
+* [x] Create AssociateWarehouseBranchUseCase
 
   * Validate role
   * Validate branch scope via JWT
   * Prevent duplicate associations
 
-* [ ] Implement BranchWarehouseRepository (Prisma)
+* [x] Implement BranchWarehouseRepository (Prisma)
 
 ---
 
@@ -181,16 +181,16 @@ List warehouses visible to the authenticated user.
 
 #### Unit Tests — AssociateWarehouseBranchUseCase
 
-* [ ] Should allow COMPANY_OWNER to associate any warehouse
+* [x] Should allow COMPANY_OWNER to associate any warehouse
 * [ ] Should allow COMPANY_ADMIN to associate any warehouse
-* [ ] Should restrict BRANCH_OWNER to own branches
-* [ ] Should restrict BRANCH_ADMIN to own branches
+* [x] Should restrict BRANCH_OWNER to own branches
+* [x] Should restrict BRANCH_ADMIN to own branches
 * [ ] Should reject invalid branch scope
-* [ ] Should prevent duplicate associations
+* [x] Should prevent duplicate associations
 
 #### Integration Tests
 
-* [ ] Should return HTTP 200 on success
+* [x] Should return HTTP 200 on success
 * [ ] Should persist branch-warehouse relation
 
 ---
