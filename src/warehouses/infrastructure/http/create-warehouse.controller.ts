@@ -35,11 +35,10 @@ export class CreateWarehouseController {
 
     const result = await this.createWarehouseUseCase.execute({
       name: parseResult.data.name,
-      description: parseResult.data.description ?? null,
       user: {
         id: user.userId,
         companyId: user.companyId,
-        roles: user.roles ?? [],
+        memberships: user.memberships ?? [],
       },
     } as CreateWarehouseInput);
 

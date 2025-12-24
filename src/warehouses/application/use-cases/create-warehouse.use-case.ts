@@ -10,7 +10,7 @@ export interface CreateWarehouseInput {
   user: {
     id: string;
     companyId: string;
-    roles: string[];
+    memberships: Array<{ role: string; branchId: string | null }>;
   };
 }
 
@@ -35,7 +35,7 @@ export class CreateWarehouseUseCase {
       return fail("INVALID_INPUT");
     }
 
-    if (!this.isAuthorized(validation.data.user.roles)) {
+    if (!this.isAuthorized(validation.data.user.memberships)) {
       return fail("UNAUTHORIZED");
     }
 
@@ -52,10 +52,13 @@ export class CreateWarehouseUseCase {
     }
   }
 
-  private isAuthorized(roles: string[]): boolean {
-    return (
-      roles.includes(CompanyRole.COMPANY_OWNER) ||
-      roles.includes(CompanyRole.COMPANY_ADMIN)
+  private isAuthorized(
+    memberships: Array<{ role: string; branchId: string | null }>
+  ): boolean {
+    return memberships.some(
+      (m) =>
+        m.role === CompanyRole.COMPANY_OWNER ||
+        m.role === CompanyRole.COMPANY_ADMIN
     );
   }
 }
@@ -65,6 +68,11 @@ const createWarehouseSchema = z.object({
   user: z.object({
     id: z.string().min(1),
     companyId: z.string().min(1),
-    roles: z.array(z.string().min(1)),
+    memberships: z.array(
+      z.object({
+        role: z.string().min(1),
+        branchId: z.string().nullable(),
+      })
+    ),
   }),
 });

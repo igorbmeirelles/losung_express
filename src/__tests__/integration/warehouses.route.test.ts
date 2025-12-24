@@ -25,7 +25,7 @@ describe("/warehouses (integration)", () => {
       {
         userId: "user-1",
         companyId: "c1",
-        roles: ["COMPANY_OWNER"],
+        memberships: [{ role: "COMPANY_OWNER", branchId: null }],
       },
       authEnvs.jwtSecret,
       { expiresIn: "1h" }
@@ -46,7 +46,7 @@ describe("/warehouses (integration)", () => {
       {
         userId: "user-1",
         companyId: "c1",
-        roles: ["SELLER"],
+        memberships: [{ role: "SELLER", branchId: null }],
       },
       authEnvs.jwtSecret,
       { expiresIn: "1h" }

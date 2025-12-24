@@ -13,11 +13,10 @@ class StubWarehouseRepository implements WarehouseRepository {
 
 const baseInput = {
   name: "Main Warehouse",
-  description: "Desc",
   user: {
     id: "u1",
     companyId: "c1",
-    roles: [CompanyRole.COMPANY_OWNER],
+    memberships: [{ role: CompanyRole.COMPANY_OWNER, branchId: null }],
   },
 };
 
@@ -40,7 +39,10 @@ describe("CreateWarehouseUseCase (unit)", () => {
 
     const result = await useCase.execute({
       ...baseInput,
-      user: { ...baseInput.user, roles: ["SELLER"] },
+      user: {
+        ...baseInput.user,
+        memberships: [{ role: "SELLER", branchId: null }],
+      },
     });
 
     expect(result).toEqual({ success: false, error: "UNAUTHORIZED" });
