@@ -37,6 +37,9 @@ import { ListWarehousesController } from "./warehouses/infrastructure/http/list-
 import { PrismaCategoryRepository } from "./categories/infrastructure/repositories/prisma-category.repository.js";
 import { CreateCategoryUseCase } from "./categories/application/use-cases/create-category.use-case.js";
 import { CreateCategoryController } from "./categories/infrastructure/http/create-category.controller.js";
+import { ListCategoriesUseCase } from "./categories/application/use-cases/list-categories.use-case.js";
+import { PrismaCategoryQuery } from "./categories/infrastructure/repositories/prisma-category.query.js";
+import { ListCategoriesController } from "./categories/infrastructure/http/list-categories.controller.js";
 import { COMPANY_DEPENDENCY_TOKENS } from "./companies/tokens.js";
 import { WAREHOUSE_DEPENDENCY_TOKENS } from "./warehouses/tokens.js";
 import { CATEGORY_DEPENDENCY_TOKENS } from "./categories/tokens.js";
@@ -132,5 +135,14 @@ container.registerSingleton(
   CreateCategoryUseCase
 );
 container.registerSingleton(CreateCategoryController, CreateCategoryController);
+container.registerSingleton(
+  CATEGORY_DEPENDENCY_TOKENS.listCategoriesUseCase,
+  ListCategoriesUseCase
+);
+container.registerSingleton(
+  CATEGORY_DEPENDENCY_TOKENS.categoryQuery,
+  PrismaCategoryQuery
+);
+container.registerSingleton(ListCategoriesController, ListCategoriesController);
 
 export { container };

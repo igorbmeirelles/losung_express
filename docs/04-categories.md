@@ -153,8 +153,8 @@ List categories visible to the authenticated user.
 
 #### Subtasks
 
-* [ ] Create ListCategoriesController
-* [ ] Create ListCategoriesUseCase
+* [x] Create ListCategoriesController
+* [x] Create ListCategoriesUseCase
 
   * Resolve visibility scope from roles and branchIds
   * Scope query by companyId
@@ -223,7 +223,7 @@ List categories visible to the authenticated user.
 
 #### Unit Tests — ListCategoriesUseCase
 
-* [ ] Should list all categories for COMPANY_OWNER
+* [x] Should list all categories for COMPANY_OWNER
 * [ ] Should list all categories for COMPANY_ADMIN
 * [ ] Should list branch-scoped categories for BRANCH_OWNER
 * [ ] Should list branch-scoped categories for SELLER
@@ -231,8 +231,9 @@ List categories visible to the authenticated user.
 
 #### Integration Tests
 
-* [ ] Should return HTTP 200 with category list
+* [x] Should return HTTP 200 with category list
 * [ ] Should optionally return hierarchical structure
+* [x] Should not expose categories from other companies
 
 ---
 
