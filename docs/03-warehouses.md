@@ -152,8 +152,8 @@ List warehouses visible to the authenticated user.
 
 #### Subtasks
 
-* [ ] Create ListWarehousesController
-* [ ] Create ListWarehousesUseCase
+* [x] Create ListWarehousesController
+* [x] Create ListWarehousesUseCase
 
   * Resolve access scope from roles and branchIds
 
@@ -199,17 +199,19 @@ List warehouses visible to the authenticated user.
 
 #### Unit Tests — ListWarehousesUseCase
 
-* [ ] Should list all warehouses for COMPANY_OWNER
+* [x] Should list all warehouses for COMPANY_OWNER
 * [ ] Should list all warehouses for COMPANY_ADMIN
-* [ ] Should list branch-scoped warehouses for BRANCH_OWNER
-* [ ] Should list branch-scoped warehouses for BRANCH_ADMIN
+* [x] Should list branch-scoped warehouses for BRANCH_OWNER
+* [x] Should list branch-scoped warehouses for BRANCH_ADMIN
 * [ ] Should list branch-scoped warehouses for STOCK_ADMIN
 * [ ] Should list branch-scoped warehouses for STOCK_DISPATCHER
+* [x] Should reject unauthorized roles
 
 #### Integration Tests
 
-* [ ] Should return HTTP 200 with correct warehouse list
+* [x] Should return HTTP 200 with correct warehouse list
 * [ ] Should not expose warehouses from other companies
+* [x] Should reject unauthorized roles
 
 ---
 
